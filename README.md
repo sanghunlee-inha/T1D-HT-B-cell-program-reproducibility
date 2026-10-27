@@ -1,49 +1,42 @@
-# T1D–HT B-cell program reproducibility
+# T1D–HT B-cell program reproducibility — IJMS R3
 
-**Manuscript:** Cross-Tissue Concordance of a T1D Blood-Derived B-Cell Signature in Hashimoto Thyroiditis: Exploratory Spatial Characterization of Thyroid Immune Niches (IJMS, manuscript ijms-4640479).
+Manuscript: **Cross-Tissue Concordance of a T1D Blood-Derived B-Cell Signature with Hashimoto Thyroiditis Tissue: Exploratory Spatial Immune-Topic Analysis** (ijms-4640479).
 
-**Authors:** Eun Young Joo and Sang Hun Lee.
+**Scope:** This repository recalculates Figure 2's **summary-level** meta-analysis from 24 retained cohort/pathway effects. It does not independently derive effects from source expression matrices or reproduce Figures 3–5 end to end. Code availability must not be confused with reproduction of an analysis.
 
-This repository separates independently executable summary-level analyses from analyses requiring source data, unpublished intermediate objects, or historical software dependencies. It is **not** a claim that all analyses or figures can be reconstructed end to end.
-
-## Data and evidence levels
-
-| Component | Dataset | Status in this release |
-|---|---|---|
-| T1D pathway random-effects meta-analysis | GSE30210, GSE9006, GSE156035 | Executable from the included *retained cohort-level effect estimates* (not raw expression reconstruction) |
-| Frozen 14-gene weighted signature | Three T1D datasets → HRA001684 | Reported in manuscript, signed weights must be supplied from verified Supplementary Table S1; not reconstructed here |
-| Historical unweighted 15-gene HT analysis | HRA001684 | Historical reported result; upstream lineage unresolved |
-| Spatial frozen-score contrast | GSE248205 | Five-slide result reported, but no raw spatial scoring matrices included; not replicated here |
-| Descriptive single-cell immune markers | GSE192580 | Source-verified manuscript description; counts/metadata are not redistributed in this release |
-| Exploratory spatial RNA-first topics and H&E modelling | GSE248205 / GSE230424 | Historical fitting and model selection dependencies incomplete |
-
-### Biological units and interpretation
-
-- HRA001684 comprises 16 HT and 50 non-HT bulk thyroid samples. Two distinct scoring procedures applied to the *same* cohort do not provide independent patient-cohort replication.
-- GSE192580 contains three HT and three ICI-associated thyroiditis libraries (6,512 cells), **not healthy thyroid controls**. These data are used descriptively.
-- The slide-level GSE248205 contrast involved three HT and two control sections (exact permutation P = 0.10). Matched-gene-null P = 0.085 and B/plasma-topic correspondence P = 0.90 do **not** establish preferential localization of the frozen score.
-- HT peripheral blood and T1D pancreatic islets were **not** directly tested with the frozen signature.
-
-## Quick start (summary-level meta-analysis only)
+## Quick start
 
 ```bash
 python -m pip install -r requirements.txt
 python scripts/01_t1d_random_effects_meta.py
 python scripts/99_audit_summary.py
+python scripts/98_validate_summary_level.py
 ```
 
-The meta-analysis reads `data/derived/t1d_pathway_cohort_effects.tsv` and writes summary results under `results/`. It does not claim to independently reproduce the underlying effect estimates from expression matrices.
+The new independent implementation `scripts/98_validate_summary_level.py` (standard-library only) checks all eight pathway meta-analysis rows against `results/SYSTEMIC_PATHWAY_RANDOM_EFFECTS_META.tsv` using `data/derived/t1d_pathway_cohort_effects.tsv`. It **passed all eight rows on 2026-10-28** using the currently published retained inputs. This verifies derived-input consistency, **not original raw-cohort effect generation**.
 
-## Reported primary numerical anchors
+## Figure-by-figure evidence
 
-- T1D summary-level B-cell pooled Hedges' g: **0.514716** (95% CI **0.177885–0.851547**); BH-adjusted q **0.021948**; I² **0%**.
-- HRA001684 frozen 14-gene score: HC3-adjusted β **2.653394**, 95% CI **2.367850–2.938938**; both 50,000-draw empirical P values approximately **2 × 10⁻⁵** (reported results, **not recomputed** by this package).
-- Historical 15-gene unweighted HT association: β **2.70** (95% CI **2.41–2.99**) (reported result, **not recomputed** here).
+| Manuscript | Status in this repository |
+|---|---|
+| Figure 1, workflow | Conceptual; not analytical validation |
+| Figure 2A–B | Summary-level independently recalculated from 24 retained effects; no raw-expression workflow |
+| Figure 3A–H, spatial RNA-first topics and H&E | **Not reproduced here**: topic fitting/model selection and model input-output lineage incomplete |
+| Figure 4A, frozen 14-gene HT bulk | **Not reproduced here**: complete signed weights, standardized expression/covariates and null inputs not provided here |
+| Figure 4B, spatial frozen score | **Not reproduced here**: processed spot/slide matrices and gene-null assets unavailable |
+| Figure 4C–E, single-cell/context | **Not reproduced here**: processed cell/library and HT pathway analysis objects unavailable |
+| Figure 5A–D, marker-proxy and weights | **Not reproduced here**: design matrices, bootstrap settings, random weights and reference gene coverage unverified |
 
-## Data and code provenance
+See [R3 reproducibility status](docs/REPRODUCIBILITY_STATUS.md) and [manuscript alignment](docs/R3_MANUSCRIPT_ALIGNMENT.md).
 
-See [docs/REPRODUCIBILITY_STATUS.md](docs/REPRODUCIBILITY_STATUS.md) and [docs/DATA_ACCESS.md](docs/DATA_ACCESS.md). The versioned signed weights, original robust normalization helper, raw-to-result source manifests, and any trained models must be validated and added before calling the corresponding workflows independently reproducible. No patient-level records or restricted files should be uploaded without authorization.
+## Interpretation
 
-## Citation
+The historical 15-gene and frozen 14-gene HT scores used the **same 66 HRA001684 specimens** and do not provide independent patient-cohort replication. The direct spatial five-slide tests were nonsignificant (reported exact P = 0.10; matched-gene P = 0.085), and Topic 7 spatial maps do not localize the frozen signature. Marker-proxy adjustment reportedly attenuated the HT coefficient approximately 90% (fully adjusted interval includes zero). This cannot distinguish B-cell infiltration from B-cell state or establish causal mediation. The reported residual partial R² difference (original 0.0187 vs equal-weight 0.0111) does not demonstrate statistically significant superiority of T1D-derived weights. These analyses **were not rerun by the current GitHub package**.
 
-Article manuscript ID: `ijms-4640479`. Zenodo DOI: **pending publication**. Please cite the published paper and the archive DOI once issued.
+## Release / archival status
+
+- Historical [GitHub v0.1.1](https://github.com/sanghunlee-inha/T1D-HT-B-cell-program-reproducibility/releases/tag/v0.1.1) predates this R3 update; it is not evidence that these changes were archived.
+- Separate [Zenodo software v1 DOI: 10.5281/zenodo.23164148](https://doi.org/10.5281/zenodo.23164148) contains historical downstream scripts, but a complete clean rerun of all manuscript figures has not been verified.
+- The previously cited DOI `10.5281/zenodo.23502426` requires separate verification before any claim of accessible archival publication. This update **does not claim a new Zenodo DOI**.
+
+If an analysis cannot be independently substantiated with auditable inputs and rerunnable code, remove its inferential claims rather than describing it as independently reproduced. Do not distribute restricted or personally identifiable data.
